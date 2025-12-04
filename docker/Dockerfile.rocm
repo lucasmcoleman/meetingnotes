@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir \
     "gradio<6.0.0" \
     "pydub>=0.25.1" \
     "torchaudio>=2.0.0" \
+    "torchvision" \
     "moviepy>=1.0.3" \
     "transformers>=4.46.0" \
     "accelerate>=0.20.0" \
@@ -33,6 +34,20 @@ RUN pip install --no-cache-dir \
 
 # Copy application code
 COPY . .
+
+# Create a simple ROCm test script
+RUN echo '#!/usr/bin/env python3\n\
+import torch\n\
+print("🔴 ROCm Device Check 🔴")\n\
+print(f"PyTorch version: {torch.__version__}")\n\
+print(f"CUDA available: {torch.cuda.is_available()}")\n\
+if torch.cuda.is_available():\n\
+    print(f"CUDA device count: {torch.cuda.device_count()}")\n\
+    print(f"CUDA device name: {torch.cuda.get_device_name(0)}")\n\
+    print(f"Using AMD ROCm runtime ✅")\n\
+else:\n\
+    print("⚠️ No GPU acceleration available - using CPU")\n\
+' > /app/test_rocm.py && chmod +x /app/test_rocm.py
 
 # Expose port
 EXPOSE 7860
