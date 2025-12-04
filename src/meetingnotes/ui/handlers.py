@@ -95,6 +95,7 @@ def handle_direct_transcription(
         # Analyser le mode de transcription pour extraire le modèle
         is_api_mode = "API" in transcription_mode
         is_mlx_mode = "MLX" in transcription_mode
+        is_rocm_mode = "ROCm" in transcription_mode
         
         # Extraire le modèle du mode de transcription
         if is_api_mode:
@@ -171,6 +172,33 @@ def handle_direct_transcription(
                 start_trim=0,  # Déjà fait dans process_file_direct_voxtral
                 end_trim=0,
                 progress_callback=progress_callback
+            )
+        elif is_rocm_mode:
+            # Mode ROCm - analyse directe avec AMD GPU
+            # Extraire modèle de base et précision (même format que Local/MLX)
+            start_idx = transcription_mode.find("(") + 1
+            end_idx = transcription_mode.rfind(")")
+            model_and_precision = transcription_mode[start_idx:end_idx]
+            
+            precision_start = model_and_precision.find(" (") + 2
+            precision_end = model_and_precision.rfind(")")
+            base_model = model_and_precision[:model_and_precision.find(" (")]
+            precision = model_and_precision[precision_start:precision_end]
+            
+            model_name = build_model_name(base_model, precision)
+            
+            results = on_audio_instruct_summary(
+                file=wav_path,
+                hf_token=hf_token,
+                model_name=model_name,
+                language=language,
+                selected_sections=selected_sections,
+                start_trim=0,
+                end_trim=0,
+                chunk_duration_minutes=chunk_duration_minutes,
+                reference_speakers_data=reference_speakers_data,
+                progress_callback=progress_callback,
+                device_type="rocm"
             )
         else:
             # Mode analyse directe local par chunks avec modèle choisi

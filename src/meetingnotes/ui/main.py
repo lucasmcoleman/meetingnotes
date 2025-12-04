@@ -105,7 +105,7 @@ def main():
             
             # Processing mode
             processing_mode = gr.Radio(
-                choices=[UILabels.MODE_LOCAL, UILabels.MODE_MLX, UILabels.MODE_API],
+                choices=[UILabels.MODE_LOCAL, UILabels.MODE_MLX, UILabels.MODE_ROCM, UILabels.MODE_API],
                 value=UILabels.MODE_LOCAL,
                 label=UILabels.PROCESSING_MODE_LABEL,
                 info=UILabels.PROCESSING_MODE_INFO
@@ -137,6 +137,18 @@ def main():
                         info=UILabels.MLX_MODEL_INFO,
                         visible=False
                     )
+                    
+                    # ROCm models (hidden by default)
+                    rocm_model_choice = gr.Radio(
+                        choices=[
+                            UILabels.MODEL_MINI,
+                            UILabels.MODEL_SMALL
+                        ],
+                        value=UILabels.MODEL_MINI,
+                        label=UILabels.ROCM_MODEL_LABEL,
+                        info=UILabels.ROCM_MODEL_INFO,
+                        visible=False
+                    )
                 
                 with gr.Column():
                     # Precision/quantization (visible for local and MLX)
@@ -162,6 +174,19 @@ def main():
                         value=UILabels.PRECISION_8BIT,
                         label=UILabels.MLX_PRECISION_LABEL,
                         info=UILabels.MLX_PRECISION_INFO,
+                        visible=False
+                    )
+                    
+                    # ROCm precision (hidden by default)
+                    rocm_precision_choice = gr.Radio(
+                        choices=[
+                            UILabels.PRECISION_DEFAULT,
+                            UILabels.PRECISION_8BIT,
+                            UILabels.PRECISION_4BIT
+                        ],
+                        value=UILabels.PRECISION_8BIT,
+                        label=UILabels.ROCM_PRECISION_LABEL,
+                        info=UILabels.ROCM_PRECISION_INFO,
                         visible=False
                     )
                 
@@ -427,19 +452,22 @@ def main():
         def handle_processing_mode_change(mode_choice):
             is_local = mode_choice == "Local"
             is_mlx = mode_choice == "MLX"
+            is_rocm = mode_choice == "ROCm"
             is_api = mode_choice == "API"
             return (
                 gr.update(visible=is_local),    # local_model_choice
                 gr.update(visible=is_local),    # local_precision_choice
                 gr.update(visible=is_mlx),      # mlx_model_choice
                 gr.update(visible=is_mlx),      # mlx_precision_choice
+                gr.update(visible=is_rocm),     # rocm_model_choice
+                gr.update(visible=is_rocm),     # rocm_precision_choice
                 gr.update(visible=is_api)       # api_section (contient modèle + API key)
             )
         
         processing_mode.change(
             fn=handle_processing_mode_change,
             inputs=[processing_mode],
-            outputs=[local_model_choice, local_precision_choice, mlx_model_choice, mlx_precision_choice, api_section]
+            outputs=[local_model_choice, local_precision_choice, mlx_model_choice, mlx_precision_choice, rocm_model_choice, rocm_precision_choice, api_section]
         )
 
         # Fonctions de présélection des sections
@@ -454,7 +482,7 @@ def main():
         
         # Gestion de l'analyse directe
         def handle_analysis_direct(
-            audio_file, hf_token, language, processing_mode, local_model, local_precision, mlx_model, mlx_precision, api_model, 
+            audio_file, hf_token, language, processing_mode, local_model, local_precision, mlx_model, mlx_precision, rocm_model, rocm_precision, api_model,
             api_key, start_trim, end_trim, chunk_duration,
             s_resume, s_discussions, s_plan_action, s_decisions, s_prochaines_etapes,
             s_sujets_principaux, s_points_importants, s_questions, s_elements_suivi
@@ -462,6 +490,7 @@ def main():
             # Construire les paramètres selon le mode
             is_api = processing_mode == "API"
             is_mlx = processing_mode == "MLX"
+            is_rocm = processing_mode == "ROCm"
             
             if is_api:
                 # Mode API avec modèle choisi
@@ -471,6 +500,10 @@ def main():
                 # Mode MLX avec modèle et précision choisis
                 transcription_mode = f"MLX ({mlx_model} ({mlx_precision}))"
                 model_key = mlx_model
+            elif is_rocm:
+                # Mode ROCm avec modèle et précision choisis
+                transcription_mode = f"ROCm ({rocm_model} ({rocm_precision}))"
+                model_key = rocm_model
             else:
                 # Mode local avec modèle et précision choisis
                 transcription_mode = f"Local ({local_model} ({local_precision}))"
@@ -541,6 +574,8 @@ def main():
                 local_precision_choice,
                 mlx_model_choice,
                 mlx_precision_choice,
+                rocm_model_choice,
+                rocm_precision_choice,
                 api_model_choice,
                 mistral_api_key_direct,
                 start_trim_input,

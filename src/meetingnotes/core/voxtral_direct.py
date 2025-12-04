@@ -108,19 +108,21 @@ def on_audio_direct_analysis(
     end_trim=0,
     chunk_duration_minutes=15,
     reference_speakers_data=None,
-    progress_callback=None
+    progress_callback=None,
+    device_type="auto"
 ):
     """
     Analyse directe de chunks audio via l'audio instruct mode.
     
     Args:
         file: Fichier audio (chemin ou objet)
-        hf_token (str): Token Hugging Face  
+        hf_token (str): Token Hugging Face
         language (str): Langue de traitement
         meeting_type (str): Type de réunion
         start_trim (float): Secondes à enlever au début
         end_trim (float): Secondes à enlever à la fin
         chunk_duration_minutes (int): Durée des chunks en minutes
+        device_type (str): Type de device ("auto", "cuda", "cpu", "rocm")
         
     Returns:
         Dict[str, str]: Résultats avec analyse directe concaténée
@@ -134,8 +136,8 @@ def on_audio_direct_analysis(
         if not wav_path:
             return {"transcription": "❌ Erreur lors du traitement du fichier audio."}
         
-        # Initialiser Voxtral avec le modèle choisi
-        analyzer = VoxtralAnalyzer(hf_token, model_name)
+        # Initialiser Voxtral avec le modèle choisi et le type de device
+        analyzer = VoxtralAnalyzer(hf_token, model_name, device_type=device_type)
         
         print(f"🎙️ Mode analyse directe avec chunks de {chunk_duration_minutes} minutes")
         
@@ -172,10 +174,11 @@ def on_audio_instruct_summary(
     end_trim=0,
     chunk_duration_minutes=15,
     reference_speakers_data=None,
-    progress_callback=None
+    progress_callback=None,
+    device_type="auto"
 ):
     return on_audio_direct_analysis(
-        file, hf_token, model_name, language, selected_sections, 
+        file, hf_token, model_name, language, selected_sections,
         start_trim, end_trim, chunk_duration_minutes, reference_speakers_data,
-        progress_callback
+        progress_callback, device_type
     )

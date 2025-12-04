@@ -25,21 +25,45 @@ Try MeetingNotes directly in your browser: **[VincentGOURBIN/MeetingNotes-Voxtra
 ```bash
 git clone <repository-url>
 cd meetingnotes
-pip install -r requirements.txt
+python install.py
 ```
 
-2. **Configure your Hugging Face token:**
+**Note:** The installation script automatically:
+- Creates a virtual environment (`.venv`) to isolate dependencies
+- Detects AMD GPUs on Linux and installs PyTorch with ROCm support when available
+- Installs all required packages within the virtual environment
+
+2. **Activate the virtual environment:**
+
+On Linux/macOS:
+```bash
+source .venv/bin/activate
+```
+
+On Windows (Command Prompt):
+```bash
+.venv\Scripts\activate.bat
+```
+
+On Windows (PowerShell):
+```bash
+.venv\Scripts\Activate.ps1
+```
+
+3. **Configure your Hugging Face token:**
 ```bash
 cp .env.example .env
 # Edit .env and add your Hugging Face token
 ```
 
-3. **Launch the application:**
+4. **Launch the application:**
 ```bash
 python main.py
 ```
 
 The web interface will be accessible at **http://localhost:7860**
+
+**Note:** Remember to activate the virtual environment each time you want to run the application. To deactivate it when done, simply run `deactivate`.
 
 ## ⚙️ Configuration
 
@@ -66,6 +90,11 @@ Choose the mode that best fits your hardware and needs:
 - **Local processing**: Everything runs on your machine with PyTorch
 - **Privacy**: No data sent to external servers
 - **GPU acceleration**: Automatic CUDA/MPS detection
+
+#### ROCm Mode (AMD GPUs)
+- **AMD GPU acceleration**: Optimized for AMD GPUs with ROCm support
+- **Local processing**: Everything runs on your machine with PyTorch
+- **Automatic detection**: Install script detects AMD GPUs and configures ROCm
 
 #### MLX Mode (Apple Silicon)
 ![MLX Mode](assets/mlx%20mode.png)
@@ -223,6 +252,7 @@ MISTRAL_API_KEY=your_mistral_key
 ### Hardware Optimizations
 - **Mac M1/M2/M3**: Use MLX mode for better performance
 - **NVIDIA GPU**: Local mode with automatic CUDA acceleration
+- **AMD GPU**: ROCm mode with automatic GPU detection (Linux only)
 - **CPU only**: Prefer 4bit models to save memory
 - **Limited memory**: Mini 4bit (~2GB) or Small 4bit (~12GB)
 

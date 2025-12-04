@@ -22,8 +22,10 @@ class UILabels:
     # Model selection
     LOCAL_MODEL_LABEL = "🤖 Local Model"
     LOCAL_MODEL_INFO = "Mini: Faster | Small: More accurate, more memory"
-    MLX_MODEL_LABEL = "🚀 MLX Model"  
+    MLX_MODEL_LABEL = "🚀 MLX Model"
     MLX_MODEL_INFO = "Mini: Faster | Small: More accurate, more memory"
+    ROCM_MODEL_LABEL = "🔴 ROCm Model"
+    ROCM_MODEL_INFO = "Mini: Faster | Small: More accurate, more memory"
     API_MODEL_LABEL = "🌐 API Model"
     API_MODEL_INFO = "Mini: Faster, cheaper | Small: More accurate, more expensive"
     
@@ -32,6 +34,8 @@ class UILabels:
     LOCAL_PRECISION_INFO = "Default: Max quality | 8bit: Good compromise | 4bit: Memory saving"
     MLX_PRECISION_LABEL = "⚡ MLX Precision"
     MLX_PRECISION_INFO = "Default: Max quality | 8bit: Good compromise | 4bit: Memory saving"
+    ROCM_PRECISION_LABEL = "⚡ ROCm Precision"
+    ROCM_PRECISION_INFO = "Default: Max quality | 8bit: Good compromise | 4bit: Memory saving"
     
     # API Key
     API_KEY_LABEL = "🔑 Mistral API Key"
@@ -170,6 +174,7 @@ class UILabels:
     PRECISION_4BIT = "4bit"
     MODE_LOCAL = "Local"
     MODE_MLX = "MLX"
+    MODE_ROCM = "ROCm"
     MODE_API = "API"
     
     # API models

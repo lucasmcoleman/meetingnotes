@@ -38,13 +38,14 @@ class VoxtralAnalyzer:
     locuteurs et analyser les prises de parole.
     """
     
-    def __init__(self, hf_token: str, model_name: str = "Voxtral-Mini-3B-2507"):
+    def __init__(self, hf_token: str, model_name: str = "Voxtral-Mini-3B-2507", device_type: str = "auto"):
         """
         Initialise l'analyseur Voxtral.
         
         Args:
             hf_token (str): Token Hugging Face pour accéder aux modèles
             model_name (str): Nom du modèle Voxtral à utiliser
+            device_type (str): Type de device ("auto", "cuda", "cpu", "rocm")
         """
         # Mapper les noms vers les identifiants Hugging Face
         model_mapping = {
@@ -64,7 +65,15 @@ class VoxtralAnalyzer:
         )
         
         # Configuration du device et dtype
-        if torch.backends.mps.is_available():
+        # Check for ROCm (AMD GPU) support
+        is_rocm = device_type == "rocm" or (device_type == "auto" and hasattr(torch.version, 'hip') and torch.version.hip is not None)
+        
+        if is_rocm and torch.cuda.is_available():
+            self.device = torch.device("cuda")  # ROCm uses CUDA API
+            device_str = "cuda"
+            self.dtype = torch.float16
+            print(f"🔴 Utilisation de AMD ROCm avec float16")
+        elif torch.backends.mps.is_available():
             self.device = torch.device("mps")
             device_str = "mps"
             # MPS peut avoir des problèmes avec bfloat16, utilisons float16
