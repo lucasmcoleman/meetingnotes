@@ -65,6 +65,25 @@ The web interface will be accessible at **http://localhost:7860**
 
 **Note:** Remember to activate the virtual environment each time you want to run the application. To deactivate it when done, simply run `deactivate`.
 
+## 🐳 Docker Usage
+
+The application can be containerized for easy deployment across different environments. Three Docker configurations are provided to support different hardware backends:
+
+### ROCm Backend (AMD GPUs)
+```bash
+docker compose -f docker/docker-compose.rocm.yml up --build
+```
+
+### CUDA Backend (NVIDIA GPUs)
+```bash
+docker compose -f docker/docker-compose.cuda.yml up --build
+```
+
+### CPU Backend
+```bash
+docker compose -f docker/docker-compose.cpu.yml up --build
+```
+
 ## ⚙️ Configuration
 
 ### Hugging Face Token (Required)
@@ -110,7 +129,7 @@ Choose the mode that best fits your hardware and needs:
 
 ### Models and Quantization
 | Model | Precision | Repository | Memory Usage |
-|-------|-----------|------------|--------------|
+|-------|-----------|------------|------------|
 | **Voxtral Mini** | Default | `mistralai/Voxtral-Mini-3B-2507` | ~6GB |
 | **Voxtral Mini** | 8bit | `mzbac/voxtral-mini-3b-8bit` | ~3.5GB |
 | **Voxtral Mini** | 4bit | `mzbac/voxtral-mini-3b-4bit-mixed` | ~2GB |
@@ -158,9 +177,7 @@ Choose the mode that best fits your hardware and needs:
 ### 2. Upload and Options
 - **File**: Direct audio or video (automatic extraction)
 - **Optional trimming**: Start/end trimming (leave empty for 0)
-
 ![Trim Options](assets/trim_options.png)
-
 - **Chunk size**: Processing duration (5-25 minutes)
 
 ### 3. Diarization (Optional)
@@ -203,7 +220,7 @@ src/meetingnotes/
 ├── ui/                    # User Interface
 │   ├── main.py                  # Main Gradio interface
 │   ├── handlers.py              # Event handlers
-│   └── labels.py                # UI labels and text constants
+│   ── labels.py                # UI labels and text constants
 └── utils/                 # Utilities
     ├── __init__.py              # Utils module
     ├── time_formatter.py        # Duration formatting
@@ -326,5 +343,4 @@ To contribute to the project:
 This project is under MIT license. See the LICENSE file for more details.
 
 ---
-
 **MeetingNotes** - Powered by [Voxtral from Mistral AI](https://mistral.ai/) | 🚀 Intelligent meeting analysis | 💾 Secure local and cloud processing

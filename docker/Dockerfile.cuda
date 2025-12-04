@@ -1,0 +1,41 @@
+# CUDA Dockerfile
+# Based on pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies (excluding torch to keep base image version)
+RUN pip install --no-cache-dir \
+    "gradio<6.0.0" \
+    "pydub>=0.25.1" \
+    "torchaudio>=2.0.0" \
+    "moviepy>=1.0.3" \
+    "transformers>=4.46.0" \
+    "accelerate>=0.20.0" \
+    "pyannote.audio>=3.1.0" \
+    "mistral-common[audio]>=1.8.0" \
+    "soundfile>=0.12.1" \
+    "librosa>=0.10.0" \
+    "python-dotenv>=1.0.0,<2.0.0" \
+    "requests>=2.31.0,<3.0.0" \
+    "psutil>=5.8.0,<6.0.0" \
+    && rm -rf /root/.cache/pip
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 7860
+
+# Run the application
+CMD ["python", "main.py"]

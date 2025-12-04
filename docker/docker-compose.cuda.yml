@@ -1,0 +1,25 @@
+# CUDA Docker Compose
+version: '3.8'
+
+services:
+  meetingnotes-cuda:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+    container_name: meetingnotes-cuda
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - PYTHONPATH=/app
+      - NVIDIA_VISIBLE_DEVICES=all
+    stdin_open: true
+    tty: true

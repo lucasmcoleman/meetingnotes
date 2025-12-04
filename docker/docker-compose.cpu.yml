@@ -1,0 +1,18 @@
+# CPU Docker Compose
+version: '3.8'
+
+services:
+  meetingnotes-cpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cpu
+    container_name: meetingnotes-cpu
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=none
+    stdin_open: true
+    tty: true

@@ -1,0 +1,25 @@
+# ROCm Docker Compose
+version: '3.8'
+
+services:
+  meetingnotes-rocm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rocm
+    container_name: meetingnotes-rocm
+    ports:
+      - "7860:7860"
+    volumes:
+      - .:/app
+    devices:
+      - "/dev/kfd:/dev/kfd"
+      - "/dev/dri:/dev/dri"
+    group_add:
+      - video
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PYTHONPATH=/app
+      - NVIDIA_VISIBLE_DEVICES=all
+    stdin_open: true
+    tty: true
